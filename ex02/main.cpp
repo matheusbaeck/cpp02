@@ -6,7 +6,7 @@
 /*   By: math <math@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 19:30:45 by math              #+#    #+#             */
-/*   Updated: 2024/06/05 17:54:49 by math             ###   ########.fr       */
+/*   Updated: 2024/06/05 17:53:07 by math             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void printBit(float f)
 int main( void )
 {
 	Fixed a;
-	Fixed const b( 10 );
+	Fixed const b( -10 );
 	Fixed const c( 42.42f );
 	Fixed const d( b );
 
