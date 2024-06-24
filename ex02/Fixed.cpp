@@ -6,7 +6,7 @@
 /*   By: math <math@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 19:30:30 by math              #+#    #+#             */
-/*   Updated: 2024/06/05 17:52:06 by math             ###   ########.fr       */
+/*   Updated: 2024/06/24 14:38:08 by math             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ float	Fixed::toFloat( void ) const
 		f_fractional += 1;
 	}
 	else
-		f_fractional -=1;
+		f_fractional -= 1;
 	return (f_integer + f_fractional);
 }
 
