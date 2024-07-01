@@ -6,7 +6,7 @@
 /*   By: math <math@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 19:30:59 by math              #+#    #+#             */
-/*   Updated: 2024/05/13 21:08:03 by math             ###   ########.fr       */
+/*   Updated: 2024/06/30 23:22:57 by math             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ class Fixed
 		Fixed( Fixed const &src);
 		~Fixed( void );
 
-		Fixed			&operator=(Fixed const &rhc);
+		Fixed			&operator=(Fixed const &obj);
 
 		int		getRawBits( void ) const;
 		void	setRawBits( int newValue );

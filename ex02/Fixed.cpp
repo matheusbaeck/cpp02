@@ -6,13 +6,18 @@
 /*   By: math <math@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 19:30:30 by math              #+#    #+#             */
-/*   Updated: 2024/06/24 14:38:08 by math             ###   ########.fr       */
+/*   Updated: 2024/07/01 12:24:23 by math             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Fixed.hpp"
 
 const int Fixed::fractional_bits;
+
+Fixed::Fixed( void ) : _value(0)
+{
+	std::cout << "Default constructor called" << std::endl;
+}
 
 Fixed::Fixed( int value ) : _value(value >= 0 ? (value << 8) & ~(1 << 31) : value << 8 | (1 << 31))
 {
@@ -32,11 +37,6 @@ Fixed::Fixed(float value)
 	std::cout << "Float constructor called" << std::endl;
 }
 
-Fixed::Fixed( void ) : _value(0)
-{
-	std::cout << "Default constructor called" << std::endl;
-}
-
 Fixed::Fixed( Fixed const &src)
 {
 	std::cout << "Copy constructor called" << std::endl;
@@ -46,13 +46,6 @@ Fixed::Fixed( Fixed const &src)
 Fixed::~Fixed( void )
 {
 	std::cout << "Destructor called" << std::endl;
-}
-
-Fixed &Fixed::operator=(Fixed const &rhs)
-{
-	std::cout << "Copy assignment operator called" << std::endl;
-	this->_value = rhs.getRawBits();
-	return *this;
 }
 
 int	Fixed::getRawBits( void ) const
@@ -99,4 +92,88 @@ std::ostream	&operator<<(std::ostream &os, Fixed const &obj)
 {
 	os << obj.toFloat();
 	return (os);
+}
+
+Fixed &Fixed::operator=(Fixed const &obj)
+{
+	std::cout << "Copy assignment operator called" << std::endl;
+	this->_value = obj.getRawBits();
+	return (*this);
+}
+
+Fixed	&Fixed::operator+(Fixed const &obj)
+{
+	*this = Fixed(this->toFloat() + obj.toFloat());
+	return (*this);
+}
+
+Fixed	&Fixed::operator-(Fixed const &obj)
+{
+	*this = Fixed(this->toFloat() - obj.toFloat());
+	return (*this);
+}
+
+Fixed	&Fixed::operator*(Fixed const &obj)
+{
+	*this = Fixed(this->toFloat() * obj.toFloat());
+	return (*this);
+}
+
+Fixed	&Fixed::operator/(Fixed const &obj)
+{
+	*this = Fixed(this->toFloat() / obj.toFloat());
+	return (*this);
+}
+
+bool	Fixed::operator==(Fixed const &obj) const
+{
+	for (int i = 0; i < 32; i++)
+	{
+		if ((this->_value << i) != (obj._value << i))
+			return (false);
+	}
+	return (true);
+}
+
+bool	Fixed::operator>(Fixed const &obj) const
+{
+	int	frac_mask = (1<< this->fractional_bits) - 1;
+	int	sign_mask = 1 << 31;
+	int	int_mask = (sign_mask - 1) - frac_mask;
+
+	if ((this->_value & sign_mask & int_mask) > (obj._value & sign_mask & int_mask))
+		return (true);
+	else if ((this->_value & sign_mask & int_mask) < (obj._value & sign_mask & int_mask))
+		return (false);
+	else
+		return (this->_value & sign_mask & frac_mask) > (obj._value & sign_mask & frac_mask);
+}
+
+bool	Fixed::operator<(Fixed const &obj) const
+{
+	int	frac_mask = (1<< this->fractional_bits) - 1;
+	int	sign_mask = 1 << 31;
+	int	int_mask = (frac_mask - 1) - frac_mask;
+
+	if ((this->_value & sign_mask & int_mask) < (obj._value & sign_mask & int_mask))
+		return (true);
+	else if ((this->_value & sign_mask & int_mask) > (obj._value & sign_mask & int_mask))
+		return (false);
+	else
+		return (this->_value & sign_mask & frac_mask) < (obj._value & sign_mask & frac_mask);
+}
+
+bool	Fixed::operator>=(Fixed const &obj) const
+{
+	return (this->_value == obj._value || this->_value > obj._value);
+}
+
+bool	Fixed::operator<=(Fixed const &obj) const
+{
+	return (this->_value == obj._value || this->_value < obj._value);
+}
+
+bool	Fixed::operator!=(Fixed const &obj) const
+{
+	return (!(*this == obj));
 }
