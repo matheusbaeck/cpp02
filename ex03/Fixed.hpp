@@ -6,7 +6,7 @@
 /*   By: math <math@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 19:30:59 by math              #+#    #+#             */
-/*   Updated: 2024/07/01 22:14:28 by math             ###   ########.fr       */
+/*   Updated: 2024/07/03 18:39:57 by math             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,10 @@ class Fixed
 		~Fixed( void );
 
 		Fixed	&operator=(Fixed const &obj);
-		Fixed	&operator+(Fixed const &obj);
-		Fixed	&operator-(Fixed const &obj);
-		Fixed	&operator*(Fixed const &obj);
-		Fixed	&operator*(float const &obj);
-		Fixed	&operator/(Fixed const &obj);
-		Fixed	&operator/(float const &obj);
+		Fixed	operator+(Fixed const &obj) const;
+		Fixed	operator-(Fixed const &obj) const;
+		Fixed	operator*(Fixed const &obj) const;
+		Fixed	operator/(Fixed const &obj) const;
 		Fixed	&operator++();
 		Fixed	operator++(int);
 		Fixed	&operator--();
@@ -52,6 +50,11 @@ class Fixed
 		void	setRawBits( int newValue );
 		float	toFloat( void ) const;
 		int		toInt( void ) const;
+
+		static Fixed		&min(Fixed& a, Fixed& b);
+		static Fixed		&max(Fixed& a, Fixed& b);
+		static Fixed const	&min(Fixed const &a, Fixed const &b);
+		static Fixed const	&max(Fixed const &a, Fixed const &b);
 };
 
 std::ostream	&operator<<(std::ostream &os, Fixed const &obj);
