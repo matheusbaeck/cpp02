@@ -6,7 +6,7 @@
 /*   By: math <math@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 19:30:59 by math              #+#    #+#             */
-/*   Updated: 2024/06/30 23:22:57 by math             ###   ########.fr       */
+/*   Updated: 2024/07/01 21:18:52 by math             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@
 
 class Fixed
 {
-	int	_value;
+	private:
+		int	_value;
 	public:
 		static const int	fractional_bits = 8;
 		Fixed( void );
@@ -28,7 +29,6 @@ class Fixed
 
 		int		getRawBits( void ) const;
 		void	setRawBits( int newValue );
-		
 };
 
 std::ostream	&operator<<(std::ostream &os, Fixed const &obj);

@@ -6,7 +6,7 @@
 /*   By: math <math@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 19:30:30 by math              #+#    #+#             */
-/*   Updated: 2024/06/05 17:52:06 by math             ###   ########.fr       */
+/*   Updated: 2024/07/03 12:45:09 by math             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 const int Fixed::fractional_bits;
 
-Fixed::Fixed( int value ) : _value(value >= 0 ? (value << 8) & ~(1 << 31) : value << 8 | (1 << 31))
+Fixed::Fixed( int value ) : _value(value >= 0 ? (value << this->fractional_bits) & ~(1 << 31) : value << this->fractional_bits | (1 << 31))
 {
-	std::cout << "Int constructor called" << std::endl;
+	std::cout << "Fixed Int constructor" << std::endl;
 }
 
 Fixed::Fixed(float value)
@@ -29,28 +29,28 @@ Fixed::Fixed(float value)
 	this->_value = integer_part << Fixed::fractional_bits;
 	this->_value = (value >= 0) ? (this->_value & ~(1 << 31)) : (this->_value | (1 << 31));
 	this->_value |= fractional_part;
-	std::cout << "Float constructor called" << std::endl;
+	std::cout << "Fixed Float constructor" << std::endl;
 }
 
 Fixed::Fixed( void ) : _value(0)
 {
-	std::cout << "Default constructor called" << std::endl;
+	std::cout << "Fixed Default constructor" << std::endl;
 }
 
 Fixed::Fixed( Fixed const &src)
 {
-	std::cout << "Copy constructor called" << std::endl;
+	std::cout << "Fixed Copy constructor " << std::endl;
 	*this = src;
 }
 
 Fixed::~Fixed( void )
 {
-	std::cout << "Destructor called" << std::endl;
+	std::cout << "Fixed Destructor" << std::endl;
 }
 
 Fixed &Fixed::operator=(Fixed const &rhs)
 {
-	std::cout << "Copy assignment operator called" << std::endl;
+	std::cout << "Fixed Copy assignment operator" << std::endl;
 	this->_value = rhs.getRawBits();
 	return *this;
 }
@@ -92,7 +92,7 @@ int		Fixed::toInt( void ) const
 	int	sign;
 
 	sign = this->_value & sign_mask;
-	return ((this->_value >> 8) | sign);
+	return ((this->_value >> this->fractional_bits) | sign)
 }
 
 std::ostream	&operator<<(std::ostream &os, Fixed const &obj)

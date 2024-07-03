@@ -6,7 +6,7 @@
 /*   By: math <math@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 19:30:30 by math              #+#    #+#             */
-/*   Updated: 2024/05/13 21:20:26 by math             ###   ########.fr       */
+/*   Updated: 2024/07/03 12:43:58 by math             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,31 +16,31 @@ const int Fixed::fractional_bits;
 
 Fixed::Fixed( void ) : _value(0)
 {
-	std::cout << "Default constructor called" << std::endl;
+	std::cout << "Fixed Default constructor" << std::endl;
 }
 
 Fixed::Fixed( Fixed const &src)
 {
-	std::cout << "Copy constructor called" << std::endl;
+	std::cout << "Fixed Copy constructor" << std::endl;
 	*this = src;
 }
 
 Fixed::~Fixed( void )
 {
-	std::cout << "Destructor called" << std::endl;
+	std::cout << "Fixed Destructor" << std::endl;
 	return ;
 }
 
-Fixed &Fixed::operator=(Fixed const &rhs)
+Fixed &Fixed::operator=(Fixed const &obj)
 {
-	std::cout << "Copy assignment operator called" << std::endl;
-	this->_value = rhs.getRawBits();
-	return *this;
+	std::cout << "Fixed Copy assignment operator" << std::endl;
+	this->_value = obj._value;
+	return (*this);
 }
 
 int	Fixed::getRawBits( void ) const
 {
-	std::cout << "getRawBits member function called" << std::endl;
+	std::cout << "getRawBits member function" << std::endl;
 	return (this->_value);
 }
 
