@@ -6,11 +6,12 @@
 /*   By: math <math@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 19:30:45 by math              #+#    #+#             */
-/*   Updated: 2024/07/03 18:44:08 by math             ###   ########.fr       */
+/*   Updated: 2024/07/04 00:17:51 by math             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Fixed.hpp"
+#include <iomanip>
 #include "limits.h"
 
 void	printBit(int nb)
@@ -31,6 +32,15 @@ void	printBit(float f)
 
 	std::memcpy(&num, &f, sizeof(f));
 	printBit(num);
+}
+
+void	testLimits( void )
+{
+	std::cout << std::setw(12) << Fixed(INT_MAX) << std::setw(12) << Fixed(INT_MAX).toInt() << std::endl;
+	/* printBit(Fixed(INT_MAX).getRawBits());
+	printBit(Fixed(INT_MAX).toInt());
+	printBit(Fixed(INT_MAX).toFloat()); */
+	printBit(INT_MAX);
 }
 
 void	printTestResult(const std::string &operation, const Fixed &a, const Fixed &b, const Fixed &result, float expected)
@@ -71,14 +81,15 @@ void	testMultiplication(float a, float b)
 
 void	testDivision(float a, float b)
 {
+
 	Fixed	fa(a);
 	Fixed	fb(b);
 
-	printTestResult("/", a, b, fa / fb, a / b);
-	printTestResult("/", b, a * -1.0f, fb / (fa * -1.0f), b / (a * -1.0f));
-	printTestResult("/", b * -1.0f, a, (fb * -1.0f) / fa, (b * -1.0f) / a);
-	printTestResult("/", b * -1.0f, a * -1.0f, (fb * -1.0f) / (fa * -1.0f), (b * -1.0f) / (a * -1.0f));
-	printTestResult("/", b * 0.0f, a * -1.0f, (fb * 0.0f) / (fa * -1.0f), (b * 0.0f) / (a * -1.0f));
+	printTestResult("/", fa, fb, fa / fb, a / b);
+	printTestResult("/", fb, fa * -1.0f, fb / (fa * -1.0f), b / (a * -1.0f));
+	printTestResult("/", fb * -1.0f, fa, (fb * -1.0f) / fa, (b * -1.0f) / a);
+	printTestResult("/", fb * -1.0f, fa * -1.0f, (fb * -1.0f) / (fa * -1.0f), (b * -1.0f) / (a * -1.0f));
+	printTestResult("/", fb * 0.0f, fa * -1.0f, (fb * 0.0f) / (fa * -1.0f), (b * 0.0f) / (a * -1.0f));
 	try
 	{
 		std::cout << "b / (a * 0) = " << b / (a * 0.0f) << "-> Error (Division by zero not handled)" << std::endl;
@@ -91,16 +102,18 @@ void	testDivision(float a, float b)
 
 void	testIncrementDecrement(void)
 {
-	Fixed c(1.5f);
+	float	f = -2.5f;
+	Fixed	c(f);
+
 	std::cout << "Initial c: " << c << std::endl;
-	c++;
-	std::cout << "c++: " << c << std::endl;
-	++c;
-	std::cout << "++c: " << c << std::endl;
-	c--;
-	std::cout << "c--: " << c << std::endl;
-	--c;
-	std::cout << "--c: " << c << std::endl;
+	for (int i = 0; i < 5; i++)
+		std::cout << "++c:" << std::setw(10) << ++c << ":" << std::setw(10) << c << std::endl;
+	for (int i = 0; i < 5; i++)
+		std::cout << "--c:" << std::setw(10) << --c << ":" << std::setw(10) << c << std::endl;
+	for (int i = 0; i < 5; i++)
+		std::cout << "c++:" << std::setw(10) << c++ << ":" << std::setw(10) << c << std::endl;
+	for (int i = 0; i < 5; i++)
+		std::cout << "c--:" << std::setw(10) << c-- << ":" << std::setw(10) << c << std::endl;
 }
 
 void	testComparison(float a, float b)
@@ -112,16 +125,17 @@ void	testComparison(float a, float b)
 	std::cout << fa << " == " << fa << " :" << (fa == fa) << "-> " << ((fa == fa) == (a == a) ? "OK" : "Error") << std::endl;
 	std::cout << fa << " != " << fb << " :" << (fa != fb) << "-> " << ((fa != fb) == (a != b) ? "OK" : "Error") << std::endl;
 	std::cout << fa << " != " << fa << " :" << (fa != fa) << "-> " << ((fa != fa) == (a != a) ? "OK" : "Error") << std::endl;
-	std::cout << fa << " < " << fb << " :" << (fa < fb) << "-> " << ((fa < fb) == (a < b) ? "OK" : "Error") << std::endl;
-	std::cout << fa << " > " << fb << " :" << (fa > fb) << "-> " << ((fa < fb) == (a > b) ? "OK" : "Error") << std::endl;
-	std::cout << fa << " < " << (fb * -1.0f) << " :" << (fa < (fb * -1.0f)) << " -> " << ((fa < (fb *-1.0f)) == (a < (b *-1.0f)) ? "OK" : "Error") << std::endl;
+	std::cout << fa << " > " << fb << " :" << (fa > fb) << "-> " << ((fa > fb) == (a > b) ? "OK" : "Error") << std::endl;
 	std::cout << fa << " > " << (fb * -1.0f) << " :" << (fa > (fb * -1.0f)) << " -> " << ((fa > (fb *-1.0f)) == (a > (b *-1.0f)) ? "OK" : "Error") << std::endl;
-	std::cout << (fa * -1.0f) << " < " << (fb * -1.0f) << " :" << ((fa * -1.0f) < (fb *-1.0f)) << " -> " << (((fa * -1.0f) < (fb *-1.0f)) == ((a * -1.0f) < (b *-1.0f)) ? "OK" : "Error") << std::endl;
+	std::cout << (fa * -1.0f) << " > " << fb << " :" << ((fa * -1.0f) > fb) << " -> " << (((fa * -1.0f) > fb) == ((a *-1.0f) > b) ? "OK" : "Error") << std::endl;
 	std::cout << (fa * -1.0f) << " > " << (fb * -1.0f) << " :" << ((fa * -1.0f) > (fb *-1.0f)) << " -> " << (((fa * -1.0f) > (fb *-1.0f)) == ((a * -1.0f) > (b *-1.0f)) ? "OK" : "Error") << std::endl;
-	std::cout << fa << " <= " << fb << " :" << "-> " << ((fa <= fb) == (a <= b) ? "OK" : "Error") << std::endl;
-	std::cout << fa << " >= " << fb << " :" << "-> " << ((fa >= fb) == (a <= b) ? "OK" : "Error") << std::endl;
-	std::cout << fa << " <= " << (fb * -1.0f) << " :" << "-> " << ((fa <= (fb * -1.0f)) == (a <= (b * -1.0f)) ? "OK" : "Error") << std::endl;
+	std::cout << fa << " < " << fb << " :" << (fa < fb) << "-> " << ((fa < fb) == (a < b) ? "OK" : "Error") << std::endl;
+	std::cout << fa << " < " << (fb * -1.0f) << " :" << (fa < (fb * -1.0f)) << " -> " << ((fa < (fb *-1.0f)) == (a < (b *-1.0f)) ? "OK" : "Error") << std::endl;
+	std::cout << (fa * -1.0f) << " < " << (fb * -1.0f) << " :" << ((fa * -1.0f) < (fb *-1.0f)) << " -> " << (((fa * -1.0f) < (fb *-1.0f)) == ((a * -1.0f) < (b *-1.0f)) ? "OK" : "Error") << std::endl;
+	std::cout << fa << " >= " << fb << " :" << "-> " << ((fa >= fb) == (a >= b) ? "OK" : "Error") << std::endl;
 	std::cout << fa << " >= " << (fb * -1.0f) << " :" << "-> " << ((fa >= (fb * -1.0f)) == (a >= (b * -1.0f)) ? "OK" : "Error") << std::endl;
+	std::cout << fa << " <= " << fb << " :" << "-> " << ((fa <= fb) == (a <= b) ? "OK" : "Error") << std::endl;
+	std::cout << fa << " <= " << (fb * -1.0f) << " :" << "-> " << ((fa <= (fb * -1.0f)) == (a <= (b * -1.0f)) ? "OK" : "Error") << std::endl;
 }
 
 void	testMaxMin(float a, float b)
@@ -140,6 +154,30 @@ void	testMaxMinConst(float a, float b)
 
 	std::cout << "(" << fa << ", " << fb << ")" << " min:" << Fixed::min(fa, fb) << "-> " << ((Fixed::min(fa, fb)) == (std::min(a, b)) ? "OK" : "Error") << std::endl;
 	std::cout << "(" << fa << ", " << fb << ")" << " max:" << Fixed::max(fa, fb) << "-> " << ((Fixed::max(fa, fb)) == (std::max(a, b)) ? "OK" : "Error") << std::endl;
+}
+
+void	testFractionalRange( int hide )
+{
+	int		d = Fixed::fractional_bits + 4;
+	float	fl = 0.0f;
+	Fixed	fi = Fixed(fl);
+	Fixed	limit = Fixed(1.0f);
+	Fixed	increment;
+
+	increment.setRawBits(1);
+	while (fi <= limit)
+	{
+		if (hide)
+		{
+			if (!(fi == Fixed(fl) && fi.toFloat() == fl))
+				std::cout << std::setw(d) << fi << std::setw(d) << fl << ((fi == Fixed(fl) && fi.toFloat() == fl) ? "\tOK" : "\tError") << std::endl;
+		}
+		else
+			std::cout << std::setw(d) << fi << std::setw(d) << fl << ((fi == Fixed(fl) && fi.toFloat() == fl) ? "\tOK" : "\tError") << std::endl;
+		fi = fi + increment;
+		fl += increment.toFloat();
+	}
+	
 }
 
 int main(int argc, char* argv[])
@@ -162,7 +200,13 @@ int main(int argc, char* argv[])
 		std::cerr << "Usage: " << argv[0] << " <float1> <float2>" << std::endl;
 		return (1);
 	}
-	std::cout << "Testing Addition:" << std::endl;
+	(void)a;
+	(void)b;
+	std::cout << "Testing Limits:" << std::endl;
+	testLimits();
+	std::cout << std::endl;
+
+	/* std::cout << "Testing Addition:" << std::endl;
 	testAddition(a, b);
 	std::cout << std::endl;
 
@@ -193,6 +237,10 @@ int main(int argc, char* argv[])
 	std::cout << "Testing Max/Min Const:" << std::endl;
 	testMaxMinConst(a, b);
 	std::cout << std::endl;
+
+	std::cout << "Testing Range:" << std::endl;
+	testFractionalRange(1);
+	std::cout << std::endl; */
 
 	return (0);
 }
