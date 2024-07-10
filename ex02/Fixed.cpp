@@ -83,9 +83,8 @@ float	Fixed::toFloat( void ) const
 {
 	float	f_integer = static_cast<float>(this->toInt());
 	float	f_fractional = 0;
-	int		expo = 127 << 23;
 	int		mantissa = (this->_value & ((1 << this->fractional_bits) - 1)) << (23 - this->fractional_bits);
-	int		aux = (expo | mantissa);
+	int		aux = ((127 << 23) | mantissa);
 
 	if (mantissa == 0)
 		return(f_integer);
@@ -109,6 +108,8 @@ int		Fixed::toInt( void ) const
 	// {
 	// 	return (((this->_value) >> this->fractional_bits));
 	// }
+	if (!(this->_value & (~(1 << 31) - ((1 << this->fractional_bits) - 1))) && (this->_value & ((1 << this->fractional_bits) - 1)))
+		return (-0);
 	return (((this->_value) >> this->fractional_bits));
 }
 

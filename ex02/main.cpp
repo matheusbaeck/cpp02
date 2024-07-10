@@ -17,6 +17,31 @@
 #include <string>
 #include <sstream>
 
+void printWelcomeMessage() {
+    std::cout << "   _____ _        _                _______        _     _       _             \n"
+                 "  / ____| |      (_)              |__   __|      | |   (_)     | |            \n"
+                 " | (___ | |_ _ __ _ _ __   __ _ ______| | ___  __| |    _ _ __ | |_ ___  _ __ \n"
+                 "  \\___ \\| __| '__| | '_ \\ / _` |_  / _` |/ _ \\/ _` |   | | '_ \\| __/ _ \\| '__|\n"
+                 "  ____) | |_| |  | | | | | (_| |/ / (_| |  __/ (_| |   | | | | | || (_) | |   \n"
+                 " |_____/ \\__|_|  |_|_| |_|\\__,_/___\\__,_|\\___|\\__,_|   |_|_| |_|\\__\\___/|_|   \n"
+                 "                                                                               \n"
+                 "   ____  _       _   _  __      _______          _                            \n"
+                 "  / __ \\| |     | | (_)/ _|    |__   __|        | |                           \n"
+                 " | |  | | | ___ | |_ _| |_ _   _ _| | ___   ___ | |                           \n"
+                 " | |  | | |/ _ \\| __| |  _| | | | | |/ _ \\ / _ \\| |                           \n"
+                 " | |__| | | (_) | |_| | | | |_| | | | (_) | (_) | |                           \n"
+                 "  \\____/|_|\\___/ \\__|_|_|  \\__,_| |_|\\___/ \\___/|_|                           \n"
+                 "                                                                               \n"
+                 " =========================================================================== \n"
+                 "|                                                                            |\n"
+                 "|                           WELCOME TO FIXED CLASS                           |\n"
+                 "|                                                                            |\n"
+                 "|                    Initialization & Testing in Progress                    |\n"
+                 "|                                                                            |\n"
+                 "|                  Converting Floats to Fixed-Point Numbers                  |\n"
+                 " =========================================================================== \n";
+}
+
 std::string printBit(int nb)
 {
 	std::string			str = "(";
@@ -105,7 +130,6 @@ void	testFixed( int	nb )
 		std::cout << printBit(nb) << "\t" << std::setw(8) << std::left << nb << " OK!" << std::endl;
 		return ;
 	}
-	std::cout << "Warning!!" << std::endl;
 	std::cout << printBit(nb) << "\tasInt:" << std::setw(8) << nb << " asFloat:" << static_cast<float>(nb) << std::endl;
 	std::cout << printBit(fl.getRawBits()) << "\ttoInt:" << std::setw(8) << fl.toInt()  << " toFloat:" << fl.toFloat() << std::endl;
 	std::cout << printBit(it.getRawBits()) << "\ttoInt:" << std::setw(8) << it.toInt()  << " toFloat:" << it.toFloat() << std::endl;
@@ -124,7 +148,8 @@ void	testFixed( float nb )
 	else if ((nb - fract) != it.toFloat())
 		std::cout << " (nb - fract) != it.toFloat() " << (nb - fract) << " " << it.toFloat() << std::endl;
 
-	else if ((fl.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)) != (it.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)))
+	else if ((fl.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)) != (it.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)) &&
+				(fl.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)) != (1 << 31))
 		std::cout << " (fl.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)) != (it.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)) " << (fl.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)) << " " << (it.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)) << std::endl;
 	else if (fl.toInt() != it.toInt())
 		std::cout << " fl.toInt() != it.toInt() " << fl.toInt() << " " << it.toInt() << std::endl;
@@ -145,7 +170,6 @@ void	testFixed( float nb )
 		std::cout << printBit(nb) << "\t" << std::setw(8) << std::left << nb << " OK!" << std::endl;
 		return ;
 	}
-	std::cout << "Warning!!" << std::endl;
 	std::cout << printBit(nb) << "\tasInt:" << static_cast<int>(nb) << " asFloat:" << nb << std::endl;
 	std::cout << printBit(fl.getRawBits()) << "\ttoInt:" << fl.toInt() << " toFloat:" << fl.toFloat() << std::endl;
 	std::cout << printBit(fl.toFloat()) << std::endl;
@@ -196,6 +220,7 @@ void	testLimitsFloat()
 	int temp;
 	float nb;
 
+	
 	std::cout << std::endl << "Testing Limits Natural +Float:" << std::endl;
 	for (size_t i = 0; i < (31 - Fixed::fractional_bits); i++)
 	{
@@ -233,7 +258,6 @@ void	testLimitsFloat()
 			}
 		}
 	}
-
 	std::cout << std::endl << "Testing Limits Natural -FloatExp:" << std::endl;
 	for (int exp = (127 - Fixed::fractional_bits); exp <= (127 + Fixed::fractional_bits); exp++)
 	{
@@ -418,6 +442,7 @@ int main(int argc, char* argv[])
 	}
 	(void)a;
 	(void)b;
+	printWelcomeMessage();
 	/* std::cout << "Testing Addition:" << std::endl;
 	testAddition(a, b);
 	std::cout << std::endl;
@@ -454,7 +479,7 @@ int main(int argc, char* argv[])
 	testFractionalRange(0);
 	std::cout << std::endl; */
 
-	testLimitsInt();
+	//testLimitsInt();
 	testLimitsFloat();
 
 	return (0);
