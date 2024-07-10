@@ -6,7 +6,7 @@
 /*   By: math <math@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 19:30:30 by math              #+#    #+#             */
-/*   Updated: 2024/07/03 12:51:32 by math             ###   ########.fr       */
+/*   Updated: 2024/07/05 18:10:25 by math             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,9 @@ int		Fixed::toInt( void ) const
 
 std::ostream	&operator<<(std::ostream &os, Fixed const &obj)
 {
-	os << obj.toFloat();
+	if (obj.getRawBits() & ((1 << Fixed::fractional_bits) - 1))
+		os << obj.toInt();
+	else
+		os << obj.toFloat();
 	return (os);
 }

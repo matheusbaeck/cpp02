@@ -52,7 +52,7 @@ float	Fixed::toFloat( void ) const
 	int		mantissa = (this->_value & ((1 << this->fractional_bits) - 1)) << (23 - this->fractional_bits);
 	int		aux = (expo | mantissa);
 
-	float m = 2147483392;
+	float m = 2147483647;
 	Fixed n(m);
 	std::cout << "test" << f_integer << " " << m << " " << 2147483392.0f << std::endl;
 	printBit(mantissa);
@@ -80,7 +80,10 @@ int		Fixed::toInt( void ) const
 
 std::ostream	&operator<<(std::ostream &os, Fixed const &obj)
 {
-	os << obj.toFloat();
+	if (obj.getRawBits() & ((1 << Fixed::fractional_bits) - 1))
+		os << obj.toInt();
+	else
+		os << obj.toFloat();
 	return (os);
 }
 
