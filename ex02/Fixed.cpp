@@ -18,6 +18,7 @@ Fixed::Fixed( void ) : _value(0) {}
 
 Fixed::Fixed( int value ) : _value(value >= 0 ? (value << this->fractional_bits) & ~(1 << 31) : value << this->fractional_bits | (1 << 31)) {}
 
+/*
 static int	shiftMantissa( int nb )
 {
 	int	sign = nb & (1 << 31);
@@ -49,9 +50,8 @@ Fixed::Fixed(float value)
 	std::memcpy(&fractional_part, &aux, sizeof(float));
 	fractional_part = (fractional_part & ((1 << 23) - 1)) >> (23 - this->fractional_bits);
 	this->_value = (sign | integer_part | fractional_part);
-}
+}*/
 
-/*
 Fixed::Fixed(float value)
 {
 	int	integer_part;
@@ -63,7 +63,7 @@ Fixed::Fixed(float value)
 	this->_value = (value >= 0) ? (this->_value & ~(1 << 31)) : (this->_value | (1 << 31));
 	this->_value |= fractional_part;
 }
-*/
+
 
 Fixed::Fixed( Fixed const &src) { *this = src; }
 

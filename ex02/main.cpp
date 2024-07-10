@@ -80,7 +80,7 @@ void	testFixed( int	nb )
 	Fixed it(nb);
 	Fixed fl(static_cast<float>(nb));
 
-	std::cout << "Fixed(INT): " << std::setw(8) << std::left << nb;
+	std::cout << "Fixed(INT): ";
 
 	if (nb != it.toInt())
 		std::cout << " nb != it.toInt() " << nb << " " << it.toInt() << std::endl;
@@ -102,9 +102,10 @@ void	testFixed( int	nb )
 		std::cout << " static_cast<float>(nb) != it.toFloat() " << static_cast<float>(nb) << " " << fl.toInt() << std::endl;
 	else
 	{
-		std::cout << " OK!" << std::endl;
+		std::cout << printBit(nb) << "\t" << std::setw(8) << std::left << nb << " OK!" << std::endl;
 		return ;
 	}
+	std::cout << "Warning!!" << std::endl;
 	std::cout << printBit(nb) << "\tasInt:" << std::setw(8) << nb << " asFloat:" << static_cast<float>(nb) << std::endl;
 	std::cout << printBit(fl.getRawBits()) << "\ttoInt:" << std::setw(8) << fl.toInt()  << " toFloat:" << fl.toFloat() << std::endl;
 	std::cout << printBit(it.getRawBits()) << "\ttoInt:" << std::setw(8) << it.toInt()  << " toFloat:" << it.toFloat() << std::endl;
@@ -117,7 +118,7 @@ void	testFixed( float nb )
 	Fixed	fl(nb);
 	Fixed	it(static_cast<int>(nb));
 
-	std::cout << "Fixed(FLOAT): " << std::setw(8) << std::left << nb;
+	std::cout << "Fixed(FLOAT): ";
 	if (nb != fl.toFloat())
 		std::cout << " nb != fl.toFloat() " << nb << " " << fl.toFloat() << std::endl;
 	else if ((nb - fract) != it.toFloat())
@@ -141,9 +142,10 @@ void	testFixed( float nb )
 	// 	std::cout << " std::abs(fl.toFloat() - nb) < (1.0 / (1 << Fixed::fractional_bits)) " << std::abs(fl.toFloat() - nb) << " " << (1.0 / (1 << Fixed::fractional_bits)) << std::endl;
 	else
 	{
-		std::cout << " OK!" << std::endl;
+		std::cout << printBit(nb) << "\t" << std::setw(8) << std::left << nb << " OK!" << std::endl;
 		return ;
 	}
+	std::cout << "Warning!!" << std::endl;
 	std::cout << printBit(nb) << "\tasInt:" << static_cast<int>(nb) << " asFloat:" << nb << std::endl;
 	std::cout << printBit(fl.getRawBits()) << "\ttoInt:" << fl.toInt() << " toFloat:" << fl.toFloat() << std::endl;
 	std::cout << printBit(fl.toFloat()) << std::endl;
@@ -191,8 +193,10 @@ void	testLimitsFloat()
 	// int		extra[] = {0, ~(0)};
 	float	nb;
 	int 	exp = 127; */
+	int temp;
+	float nb;
 
-	/* std::cout << std::endl << "Testing Limits Natural +Float:" << std::endl;
+	std::cout << std::endl << "Testing Limits Natural +Float:" << std::endl;
 	for (size_t i = 0; i < (31 - Fixed::fractional_bits); i++)
 	{
 		nb = (1 << i);
@@ -203,6 +207,7 @@ void	testLimitsFloat()
 		nb = ((1 << i) -1);
 		testFixed(static_cast<float>(nb));
 	}
+
 	std::cout << std::endl << "Testing Limits Natural -Float:" << std::endl;
 	for (size_t i = 0; i < (32 - Fixed::fractional_bits); i++)
 	{
@@ -213,57 +218,36 @@ void	testLimitsFloat()
 	{
 		nb = ((1 << i) -1);
 		testFixed(static_cast<float>(nb) * (-1));
-	} */
+	}
 
-	// for (size_t i = (23 - Fixed::fractional_bits); i < (32 - Fixed::fractional_bits); i++)
-	// {
-	// 	temp = (1 << 31) | (1 << i) | ((exp) << 23);
-	// 	std::memcpy(&nb, &temp, sizeof(float));
-	// 	testFixed(nb);
-	// 	/* for (size_t j = 0; j < 6; j++)
-	// 	{
-	// 		temp = (1 << 31) | (1 << i) | ((exp - 3 + j) << 23);
-	// 		std::memcpy(&nb, &temp, sizeof(float));
-	// 		testFixed(nb);
-	// 	} */
-	// }
-	/* for (size_t i = (23 - Fixed::fractional_bits); i < 32; i++)
-	{
-		std::cout << i << " =>";
-		if (((1 << i) & ((exp +1) << 23)) != 0)
-			std::cout << "wrong test entry" << std::endl;
-		else
-		{
-			temp = (1 << i) | ((exp +1) << 23);
-			std::memcpy(&nb, &temp, sizeof(float));
-			testFixed(nb);
-		}
-	} */
-	
-	/* float nb;
-	int temp = 0x40004000;
-	std::memcpy(&nb, &temp, sizeof(float));
-	std::cout << printBit(nb) << std::endl;
-	testFixed(nb); */
-
-	int temp;
-	float nb;
-
+	std::cout << std::endl << "Testing Limits Natural +FloatExp:" << std::endl;
 	for (int exp = (127 - Fixed::fractional_bits); exp <= (127 + Fixed::fractional_bits); exp++)
 	{
 		for (int i =  0; i < 23; i++)
 		{
-			if (i <= (Fixed::fractional_bits + (exp - 127)))
+			if (i <= (Fixed::fractional_bits + (exp - 127) - 1))
 			{
 				temp = ((exp << 23) | (1 << (22 - i)));
 				std::memcpy(&nb, &temp, sizeof(float));
-				std::cout << printBit(nb) << std::endl;
 				testFixed(nb);
 			}
 		}
 	}
 
-	
+	std::cout << std::endl << "Testing Limits Natural -FloatExp:" << std::endl;
+	for (int exp = (127 - Fixed::fractional_bits); exp <= (127 + Fixed::fractional_bits); exp++)
+	{
+		for (int i =  0; i < 23; i++)
+		{
+			if (i <= (Fixed::fractional_bits + (exp - 127) - 1))
+			{
+				temp = ((exp << 23) | (1 << (22 - i)));
+				std::memcpy(&nb, &temp, sizeof(float));
+				testFixed(nb * (-1));
+			}
+		}
+	}
+
 	
 
 	// for (size_t i = 0; i < 32; i++)
@@ -470,7 +454,7 @@ int main(int argc, char* argv[])
 	testFractionalRange(0);
 	std::cout << std::endl; */
 
-	/* testLimitsInt(); */
+	testLimitsInt();
 	testLimitsFloat();
 
 	return (0);
