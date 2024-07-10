@@ -6,7 +6,7 @@
 /*   By: math <math@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 19:30:45 by math              #+#    #+#             */
-/*   Updated: 2024/07/04 00:17:51 by math             ###   ########.fr       */
+/*   Updated: 2024/07/09 18:52:19 by math             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,38 +14,270 @@
 #include <iomanip>
 #include "limits.h"
 
-void	printBit(int nb)
+#include <string>
+#include <sstream>
+
+std::string printBit(int nb)
 {
-	std::cout << "(";
+	std::string			str = "(";
+	std::stringstream	ss;
+
 	for (size_t i = 0; i < 32; i++)
 	{
 		if (i != 0 && i % 8 == 0)
-			std::cout << " ";
-		std::cout << ((nb >> (31 - i)) & 1);
+			ss << " ";
+		ss << ((nb >> (31 - i)) & 1);
 	}
-	std::cout << ")" << std::endl;
+	str += ss.str() + ")";
+	return str;
 }
 
-void	printBit(float f)
+std::string	printBitRaw(float f)
 {
 	int	num;
 
 	std::memcpy(&num, &f, sizeof(f));
-	printBit(num);
+	return (printBit(num));
 }
 
-void	testLimits( void )
+std::string printBit(float f)
 {
-	std::cout << std::setw(12) << Fixed(INT_MAX) << std::setw(12) << Fixed(INT_MAX).toInt() << std::endl;
-	/* printBit(Fixed(INT_MAX).getRawBits());
-	printBit(Fixed(INT_MAX).toInt());
-	printBit(Fixed(INT_MAX).toFloat()); */
-	printBit(INT_MAX);
+	int	num;
+
+	std::memcpy(&num, &f, sizeof(f));
+
+	// Extract the exponent part (bits 23 to 30)
+	int exponent = (num >> 23) & 0xFF;
+	int adjusted_exponent = exponent - 127;
+
+	std::string str = "(";
+	std::stringstream ss;
+
+	// Sign bit
+	ss << ((num >> 31) & 1) << " ";
+
+	// Format exponent part into a temporary string
+	std::stringstream exponent_ss;
+	exponent_ss << exponent << "(" << adjusted_exponent << ")";
+
+	// Ensure the whole exponent part fits in 8 spaces
+	ss << std::setw(8) << std::left << exponent_ss.str();
+
+	// Mantissa
+	for (size_t i = 9; i < 32; i++)
+	{
+		if (i != 0 && i % 8 == 0)
+			ss << " ";
+		ss << ((num >> (31 - i)) & 1);
+	}
+
+	str += ss.str() + ")";
+	return str;
+}
+
+void	testFixed( int	nb )
+{
+	Fixed it(nb);
+	Fixed fl(static_cast<float>(nb));
+
+	std::cout << "Fixed(INT): " << std::setw(8) << std::left << nb;
+
+	if (nb != it.toInt())
+		std::cout << " nb != it.toInt() " << nb << " " << it.toInt() << std::endl;
+	if (nb != fl.toInt())
+		std::cout << " nb != fl.toInt() " << nb << " " << fl.toInt() << std::endl;
+	
+	else if (fl != it)
+		std::cout << " fl == it " << fl << " " << it << std::endl;
+	else if (fl.getRawBits() != it.getRawBits())
+		std::cout << " fl.getRawBits() == it.getRawBits() " << fl.getRawBits() << " " << it.getRawBits() << std::endl;
+	else if (fl.toFloat() != it.toFloat())
+		std::cout << " fl.toFloat() != it.toFloat()" << fl.toFloat() << " " << it.toFloat() << std::endl;
+	else if (fl.toInt() != it.toInt())
+		std::cout << " fl.toInt() != it.toInt() " << fl.toInt() << " " << it.toInt() << std::endl;
+
+	else if (static_cast<float>(nb) != fl.toFloat())
+		std::cout << " static_cast<float>(nb) != fl.toFloat() " << static_cast<float>(nb) << " " << fl.toFloat() << std::endl;
+	else if (static_cast<float>(nb) != it.toFloat())
+		std::cout << " static_cast<float>(nb) != it.toFloat() " << static_cast<float>(nb) << " " << fl.toInt() << std::endl;
+	else
+	{
+		std::cout << " OK!" << std::endl;
+		return ;
+	}
+	std::cout << printBit(nb) << "\tasInt:" << std::setw(8) << nb << " asFloat:" << static_cast<float>(nb) << std::endl;
+	std::cout << printBit(fl.getRawBits()) << "\ttoInt:" << std::setw(8) << fl.toInt()  << " toFloat:" << fl.toFloat() << std::endl;
+	std::cout << printBit(it.getRawBits()) << "\ttoInt:" << std::setw(8) << it.toInt()  << " toFloat:" << it.toFloat() << std::endl;
+	std::cout << std::endl;
+}
+
+void	testFixed( float nb )
+{
+	float	fract = nb - static_cast<int>(nb); 
+	Fixed	fl(nb);
+	Fixed	it(static_cast<int>(nb));
+
+	std::cout << "Fixed(FLOAT): " << std::setw(8) << std::left << nb;
+	if (nb != fl.toFloat())
+		std::cout << " nb != fl.toFloat() " << nb << " " << fl.toFloat() << std::endl;
+	else if ((nb - fract) != it.toFloat())
+		std::cout << " (nb - fract) != it.toFloat() " << (nb - fract) << " " << it.toFloat() << std::endl;
+
+	else if ((fl.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)) != (it.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)))
+		std::cout << " (fl.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)) != (it.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)) " << (fl.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)) << " " << (it.getRawBits() & ~((1 << Fixed::fractional_bits) - 1)) << std::endl;
+	else if (fl.toInt() != it.toInt())
+		std::cout << " fl.toInt() != it.toInt() " << fl.toInt() << " " << it.toInt() << std::endl;
+	// else if ((fl - (fl - it)) != it && (fl + (fl - it)) != it)
+	// 	std::cout << " (fl -+ (fl - it)) != it " << "fl="<< fl  << "it=" << it << " space " << (fl - (fl - it)) << "|" << (fl + (fl - it)) << " " << it << std::endl;
+	// else if ((fl - (fl - it)).toFloat() != it.toFloat() && (fl + (fl - it)).toFloat() != it.toFloat())
+	// 	std::cout << " (fl -+ (fl - it)).toFloat() != it.toFloat() " << (fl - (fl - it)).toFloat() << "|" << (fl - (fl - it)).toFloat() << " " << it.toFloat() << std::endl;
+	
+
+	else if (static_cast<int>(nb) != it.toInt())
+		std::cout << " static_cast<int>(nb) != it.toInt() " << static_cast<int>(nb) << " " << it.toInt() << std::endl;
+	else if (static_cast<int>(nb) != fl.toInt())
+		std::cout << " static_cast<int>(nb) != fl.toInt() " << static_cast<int>(nb) << " " << fl.toInt() << std::endl;
+	// else if (std::abs(fl.toFloat() - nb) < (1.0 / (1 << Fixed::fractional_bits)))
+	// 	std::cout << " std::abs(fl.toFloat() - nb) < (1.0 / (1 << Fixed::fractional_bits)) " << std::abs(fl.toFloat() - nb) << " " << (1.0 / (1 << Fixed::fractional_bits)) << std::endl;
+	else
+	{
+		std::cout << " OK!" << std::endl;
+		return ;
+	}
+	std::cout << printBit(nb) << "\tasInt:" << static_cast<int>(nb) << " asFloat:" << nb << std::endl;
+	std::cout << printBit(fl.getRawBits()) << "\ttoInt:" << fl.toInt() << " toFloat:" << fl.toFloat() << std::endl;
+	std::cout << printBit(fl.toFloat()) << std::endl;
+	std::cout << printBit(it.getRawBits()) << "\ttoInt:" << it.toInt() << " toFloat:" << it.toFloat() << std::endl;
+	std::cout << printBit(it.toFloat()) << std::endl;
+	std::cout << std::endl;
 }
 
 void	printTestResult(const std::string &operation, const Fixed &a, const Fixed &b, const Fixed &result, float expected)
 {
 	std::cout << a << " " << operation << " " << b << " = " << result << " (Expected: " << expected << ")-> " << (result.toFloat() == expected ? "OK" : "Error") << std::endl;
+}
+
+void	testLimitsInt()
+{
+	int	nb;
+
+	std::cout << std::endl << "Testing Limits +Int:" << std::endl;
+	for (size_t i = 0; i < (31 - Fixed::fractional_bits); i++)
+	{
+		nb = (1 << i);
+		testFixed(nb);
+	}
+	for (size_t i = 2; i < (32 - Fixed::fractional_bits); i++)
+	{
+		nb = ((1 << i) -1);
+		testFixed(nb);
+	}
+	std::cout << std::endl << "Testing Limits -Int:" << std::endl;
+	for (size_t i = 0; i < (32 - Fixed::fractional_bits); i++)
+	{
+		nb = (1 << i);
+		testFixed(nb * (-1));
+	}
+	for (size_t i = 0; i < (32 - Fixed::fractional_bits); i++)
+	{
+		nb = ((1 << i) -1);
+		testFixed(nb * (-1));
+	}
+}
+
+void	testLimitsFloat()
+{
+	/* int		temp;
+	// int		extra[] = {0, ~(0)};
+	float	nb;
+	int 	exp = 127; */
+
+	/* std::cout << std::endl << "Testing Limits Natural +Float:" << std::endl;
+	for (size_t i = 0; i < (31 - Fixed::fractional_bits); i++)
+	{
+		nb = (1 << i);
+		testFixed(static_cast<float>(nb));
+	}
+	for (size_t i = 2; i < (32 - Fixed::fractional_bits); i++)
+	{
+		nb = ((1 << i) -1);
+		testFixed(static_cast<float>(nb));
+	}
+	std::cout << std::endl << "Testing Limits Natural -Float:" << std::endl;
+	for (size_t i = 0; i < (32 - Fixed::fractional_bits); i++)
+	{
+		nb = (1 << i);
+		testFixed(static_cast<float>(nb) * (-1));
+	}
+	for (size_t i = 0; i < (32 - Fixed::fractional_bits); i++)
+	{
+		nb = ((1 << i) -1);
+		testFixed(static_cast<float>(nb) * (-1));
+	} */
+
+	// for (size_t i = (23 - Fixed::fractional_bits); i < (32 - Fixed::fractional_bits); i++)
+	// {
+	// 	temp = (1 << 31) | (1 << i) | ((exp) << 23);
+	// 	std::memcpy(&nb, &temp, sizeof(float));
+	// 	testFixed(nb);
+	// 	/* for (size_t j = 0; j < 6; j++)
+	// 	{
+	// 		temp = (1 << 31) | (1 << i) | ((exp - 3 + j) << 23);
+	// 		std::memcpy(&nb, &temp, sizeof(float));
+	// 		testFixed(nb);
+	// 	} */
+	// }
+	/* for (size_t i = (23 - Fixed::fractional_bits); i < 32; i++)
+	{
+		std::cout << i << " =>";
+		if (((1 << i) & ((exp +1) << 23)) != 0)
+			std::cout << "wrong test entry" << std::endl;
+		else
+		{
+			temp = (1 << i) | ((exp +1) << 23);
+			std::memcpy(&nb, &temp, sizeof(float));
+			testFixed(nb);
+		}
+	} */
+	
+	/* float nb;
+	int temp = 0x40004000;
+	std::memcpy(&nb, &temp, sizeof(float));
+	std::cout << printBit(nb) << std::endl;
+	testFixed(nb); */
+
+	int temp;
+	float nb;
+
+	for (int exp = (127 - Fixed::fractional_bits); exp <= (127 + Fixed::fractional_bits); exp++)
+	{
+		for (int i =  0; i < 23; i++)
+		{
+			if (i <= (Fixed::fractional_bits + (exp - 127)))
+			{
+				temp = ((exp << 23) | (1 << (22 - i)));
+				std::memcpy(&nb, &temp, sizeof(float));
+				std::cout << printBit(nb) << std::endl;
+				testFixed(nb);
+			}
+		}
+	}
+
+	
+	
+
+	// for (size_t i = 0; i < 32; i++)
+	// {
+	// 	temp = (1 << i) - 1;
+	// 	std::memcpy(&nb, &temp, sizeof(float));
+	// 	testFixed(nb);
+	// }
+	// for (size_t i = 0; i < 2; i++)
+	// {
+	// 	temp = extra[i];
+	// 	std::memcpy(&nb, &temp, sizeof(float));
+	// 	testFixed(nb);
+	// }
 }
 
 void	testAddition(float a, float b)
@@ -202,10 +434,6 @@ int main(int argc, char* argv[])
 	}
 	(void)a;
 	(void)b;
-	std::cout << "Testing Limits:" << std::endl;
-	testLimits();
-	std::cout << std::endl;
-
 	/* std::cout << "Testing Addition:" << std::endl;
 	testAddition(a, b);
 	std::cout << std::endl;
@@ -239,8 +467,11 @@ int main(int argc, char* argv[])
 	std::cout << std::endl;
 
 	std::cout << "Testing Range:" << std::endl;
-	testFractionalRange(1);
+	testFractionalRange(0);
 	std::cout << std::endl; */
+
+	/* testLimitsInt(); */
+	testLimitsFloat();
 
 	return (0);
 }
