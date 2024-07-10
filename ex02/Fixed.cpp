@@ -18,40 +18,6 @@ Fixed::Fixed( void ) : _value(0) {}
 
 Fixed::Fixed( int value ) : _value(value >= 0 ? (value << this->fractional_bits) & ~(1 << 31) : value << this->fractional_bits | (1 << 31)) {}
 
-/*
-static int	shiftMantissa( int nb )
-{
-	int	sign = nb & (1 << 31);
-	int mantissa = nb & ((1 << 23) - 1);
-	int	exp = nb & (255 << 23);
-
-	while ((exp >> 23) <= 127 && mantissa && (mantissa & (1 << 22)) & 0)
-	{
-		mantissa = (mantissa << 1) & ((1 << 23) - 1);
-		exp += (1 << 23);
-		nb = (sign | exp | mantissa);
-	}
-	return (nb);
-}
-
-Fixed::Fixed(float value)
-{
-	float	aux;
-	int		sign;
-	int		integer_part;
-	int		fractional_part;
-
-	sign = 0;
-	if (value < 0)
-		sign = (1 << 31);
-	integer_part = static_cast<int>(value);
-	integer_part = (integer_part << this->fractional_bits) & (~(1 << 31) - ((1 << this->fractional_bits) - 1));
-	aux = shiftMantissa(value - integer_part);
-	std::memcpy(&fractional_part, &aux, sizeof(float));
-	fractional_part = (fractional_part & ((1 << 23) - 1)) >> (23 - this->fractional_bits);
-	this->_value = (sign | integer_part | fractional_part);
-}*/
-
 Fixed::Fixed(float value)
 {
 	int	integer_part;
@@ -101,13 +67,6 @@ float	Fixed::toFloat( void ) const
 
 int		Fixed::toInt( void ) const
 {
-	// int	sign_mask = (1 << 31);
-	// int	int_mask = sign_mask - (1 << this->fractional_bits);
-
-	// if (this->_value & sign_mask)
-	// {
-	// 	return (((this->_value) >> this->fractional_bits));
-	// }
 	if (!(this->_value & (~(1 << 31) - ((1 << this->fractional_bits) - 1))) && (this->_value & ((1 << this->fractional_bits) - 1)))
 		return (-0);
 	return (((this->_value) >> this->fractional_bits));
@@ -195,7 +154,6 @@ bool	Fixed::operator>(Fixed const &obj) const
 			return (this->_value & (1 << i));
 	}
 	return (false);
-	// return (this->_value > obj._value);
 }
 
 bool	Fixed::operator<(Fixed const &obj) const
@@ -208,7 +166,6 @@ bool	Fixed::operator<(Fixed const &obj) const
 			return (!(this->_value & (1 << i)));
 	}
 	return (false);
-	// return (this->_value < obj._value);
 }
 
 bool	Fixed::operator>=(Fixed const &obj) const
@@ -221,7 +178,6 @@ bool	Fixed::operator>=(Fixed const &obj) const
 			return (this->_value & (1 << i));
 	}
 	return (true);
-	// return (this->_value >= obj._value);
 }
 
 bool	Fixed::operator<=(Fixed const &obj) const
@@ -234,7 +190,6 @@ bool	Fixed::operator<=(Fixed const &obj) const
 			return (!(this->_value & (1 << i)));
 	}
 	return (true);
-	// return (this->_value <= obj._value);
 }
 
 bool	Fixed::operator!=(Fixed const &obj) const
