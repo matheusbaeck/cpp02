@@ -11,11 +11,8 @@
 /* ************************************************************************** */
 
 #include "Fixed.hpp"
-#include <iomanip>
-#include "limits.h"
 
-#include <string>
-#include <sstream>
+# include <sstream> //stream strig
 
 void printWelcomeMessage( void )
 {

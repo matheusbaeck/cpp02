@@ -13,10 +13,13 @@
 #ifndef FIXED_H__
 # define FIXED_H__
 
+# include "limits.h"
 # include <iostream>
-# include <bitset>
-# include <cstring>
-# include <cmath>
+# include <iomanip>
+# include <cstring> //std::memcpy
+# include <cmath> //atof
+
+
 
 class Fixed
 {
