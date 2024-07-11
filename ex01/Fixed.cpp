@@ -14,7 +14,12 @@
 
 const int Fixed::fractional_bits;
 
-Fixed::Fixed( int value ) : _value(value >= 0 ? (value << this->fractional_bits) & ~(1 << 31) : value << this->fractional_bits | (1 << 31))
+Fixed::Fixed( void ) : _value(0)
+{
+	std::cout << "Fixed Default constructor" << std::endl;
+}
+
+Fixed::Fixed( int value ) : _value(value >= 0 ? (value << this->fractional_bits) & ~(1 << 31) : value << this->fractional_bits | (1 << 31)) {}
 {
 	std::cout << "Fixed Int constructor" << std::endl;
 }
@@ -32,11 +37,6 @@ Fixed::Fixed(float value)
 	std::cout << "Fixed Float constructor" << std::endl;
 }
 
-Fixed::Fixed( void ) : _value(0)
-{
-	std::cout << "Fixed Default constructor" << std::endl;
-}
-
 Fixed::Fixed( Fixed const &src)
 {
 	std::cout << "Fixed Copy constructor " << std::endl;
@@ -46,13 +46,6 @@ Fixed::Fixed( Fixed const &src)
 Fixed::~Fixed( void )
 {
 	std::cout << "Fixed Destructor" << std::endl;
-}
-
-Fixed &Fixed::operator=(Fixed const &rhs)
-{
-	std::cout << "Fixed Copy assignment operator" << std::endl;
-	this->_value = rhs.getRawBits();
-	return *this;
 }
 
 int	Fixed::getRawBits( void ) const
@@ -69,9 +62,8 @@ float	Fixed::toFloat( void ) const
 {
 	float	f_integer = static_cast<float>(this->toInt());
 	float	f_fractional = 0;
-	int		expo = 127 << 23;
-	int		mantissa = (this->_value & ((1 << 8) - 1)) << (23 - 8);
-	int		aux = (expo | mantissa);
+	int		mantissa = (this->_value & ((1 << this->fractional_bits) - 1)) << (23 - this->fractional_bits);
+	int		aux = ((127 << 23) | mantissa);
 
 	if (mantissa == 0)
 		return(f_integer);
@@ -82,17 +74,15 @@ float	Fixed::toFloat( void ) const
 		f_fractional += 1;
 	}
 	else
-		f_fractional -=1;
+		f_fractional -= 1;
 	return (f_integer + f_fractional);
 }
 
 int		Fixed::toInt( void ) const
 {
-	int	sign_mask = (1 << 31);
-	int	sign;
-
-	sign = this->_value & sign_mask;
-	return ((this->_value >> this->fractional_bits) | sign);
+	if (!(this->_value & (~(1 << 31) - ((1 << this->fractional_bits) - 1))) && (this->_value & ((1 << this->fractional_bits) - 1)))
+		return (-0);
+	return (((this->_value) >> this->fractional_bits));
 }
 
 std::ostream	&operator<<(std::ostream &os, Fixed const &obj)
@@ -102,4 +92,11 @@ std::ostream	&operator<<(std::ostream &os, Fixed const &obj)
 	else
 		os << obj.toFloat();
 	return (os);
+}
+
+Fixed &Fixed::operator=(Fixed const &rhs)
+{
+	std::cout << "Fixed Copy assignment operator" << std::endl;
+	this->_value = rhs.getRawBits();
+	return *this;
 }

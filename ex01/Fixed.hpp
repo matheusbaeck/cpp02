@@ -40,7 +40,7 @@ class Fixed
 
 std::ostream	&operator<<(std::ostream &os, Fixed const &obj);
 
-void	printBit(int nb);
-void	printBit(float f);
+std::string	printBit(int nb);
+std::string	printBit(float f);
 
 #endif
