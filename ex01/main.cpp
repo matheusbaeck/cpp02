@@ -44,31 +44,21 @@ std::string printBit(float f)
 
 	std::memcpy(&num, &f, sizeof(f));
 
-	// Extract the exponent part (bits 23 to 30)
 	int exponent = (num >> 23) & 0xFF;
 	int adjusted_exponent = exponent - 127;
 
 	std::string str = "(";
 	std::stringstream ss;
-
-	// Sign bit
 	ss << ((num >> 31) & 1) << " ";
-
-	// Format exponent part into a temporary string
 	std::stringstream exponent_ss;
 	exponent_ss << exponent << "(" << adjusted_exponent << ")";
-
-	// Ensure the whole exponent part fits in 8 spaces
 	ss << std::setw(8) << std::left << exponent_ss.str();
-
-	// Mantissa
 	for (size_t i = 9; i < 32; i++)
 	{
 		if (i != 0 && i % 8 == 0)
 			ss << " ";
 		ss << ((num >> (31 - i)) & 1);
 	}
-
 	str += ss.str() + ")";
 	return str;
 }
