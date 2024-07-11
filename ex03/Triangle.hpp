@@ -13,10 +13,6 @@
 #ifndef TRIANGLE_H__
 # define TRIANGLE_H__
 
-# include <iostream>
-# include <bitset>
-# include <cstring>
-# include <cmath>
 # include "Point.hpp"
 
 class Triangle
@@ -38,6 +34,7 @@ class Triangle
 		Point	vC() const;
 		Fixed	getArea() const;
 		bool	cointain( Point P ) const;
+		bool    isValid( void ) const;
 
 		Triangle	&operator=(Triangle const &obj);
 };
