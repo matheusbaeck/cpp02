@@ -19,7 +19,7 @@ Fixed::Fixed( void ) : _value(0)
 	std::cout << "Fixed Default constructor" << std::endl;
 }
 
-Fixed::Fixed( int value ) : _value(value >= 0 ? (value << this->fractional_bits) & ~(1 << 31) : value << this->fractional_bits | (1 << 31)) {}
+Fixed::Fixed( int value ) : _value(value >= 0 ? (value << this->fractional_bits) & ~(1 << 31) : value << this->fractional_bits | (1 << 31))
 {
 	std::cout << "Fixed Int constructor" << std::endl;
 }
@@ -87,7 +87,7 @@ int		Fixed::toInt( void ) const
 
 std::ostream	&operator<<(std::ostream &os, Fixed const &obj)
 {
-	if (obj.getRawBits() & ((1 << Fixed::fractional_bits) - 1))
+	if (!(obj.getRawBits() & ((1 << Fixed::fractional_bits) - 1)))
 		os << obj.toInt();
 	else
 		os << obj.toFloat();

@@ -167,7 +167,7 @@ void	testFixed( float nb )
 
 void	printTestResult(const std::string &operation, const Fixed &a, const Fixed &b, const Fixed &result, float expected)
 {
-	std::cout << a << " " << operation << " " << b << " = " << result << " (Expected: " << expected << ")-> " << (result.toFloat() == expected ? "OK" : "Error") << std::endl;
+	std::cout << a << " " << operation << " " << b << " = " << result << " (Expected: " << expected << ")-> " << (result.toFloat() == expected ? "OK" : "Warning") << std::endl;
 }
 
 void	testLimitsInt()
@@ -300,12 +300,13 @@ void	testDivision(float a, float b)
 	printTestResult("/", fb * 0.0f, fa * -1.0f, (fb * 0.0f) / (fa * -1.0f), (b * 0.0f) / (a * -1.0f));
 	try
 	{
-		std::cout << "b / (a * 0) = " << b / (a * 0.0f) << "-> Error (Division by zero not handled)" << std::endl;
-	}
-	catch (...)
+		Fixed	temp = fa / Fixed(0.0f);
+        std::cout << "b / (a * 0) = " << temp << "-> Error (Division by zero not handled)" << std::endl;
+    }
+	catch (const std::runtime_error &e)
 	{
-		std::cout << "b / (a * 0)-> OK (Division by zero handled)" << std::endl;
-	}
+        std::cerr << "Warning: " << e.what() << " (b / (0.0f))" << std::endl;
+    }
 }
 
 void	testIncrementDecrement(void)

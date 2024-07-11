@@ -17,6 +17,7 @@
 # include <bitset>
 # include <cstring>
 # include <cmath>
+# include <stdexcept>
 
 class Fixed
 {

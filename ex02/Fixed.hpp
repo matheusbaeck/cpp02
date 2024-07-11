@@ -18,6 +18,7 @@
 # include <iomanip>
 # include <cstring> //std::memcpy
 # include <cmath> //atof
+# include <stdexcept>
 
 
 

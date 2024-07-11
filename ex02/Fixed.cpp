@@ -74,7 +74,7 @@ int		Fixed::toInt( void ) const
 
 std::ostream	&operator<<(std::ostream &os, Fixed const &obj)
 {
-	if (obj.getRawBits() & ((1 << Fixed::fractional_bits) - 1))
+	if (!(obj.getRawBits() & ((1 << Fixed::fractional_bits) - 1)))
 		os << obj.toInt();
 	else
 		os << obj.toFloat();
@@ -104,6 +104,8 @@ Fixed	Fixed::operator*(Fixed const &obj) const
 
 Fixed	Fixed::operator/(Fixed const &obj) const
 {
+	if (obj.toFloat() == 0.0f)
+        throw std::runtime_error("Division by zero");
 	return (Fixed(this->toFloat() / obj.toFloat()));
 }
 
