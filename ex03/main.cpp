@@ -11,33 +11,59 @@
 /* ************************************************************************** */
 
 #include "Triangle.hpp"
+#include <sstream> //stream strig
+#include <cstdlib>
 
-void	printBit(int nb)
+std::string printBit(int nb)
 {
-	std::cout  << "(";
+	std::string			str = "(";
+	std::stringstream	ss;
+
 	for (size_t i = 0; i < 32; i++)
 	{
 		if (i != 0 && i % 8 == 0)
-			std::cout << " ";
-		std::cout << ((nb >> (31 - i)) & 1);
+			ss << " ";
+		ss << ((nb >> (31 - i)) & 1);
 	}
-	std::cout << ")" << std::endl;
+	str += ss.str() + ")";
+	return str;
 }
 
-void printBit(float f)
+std::string	printBitRaw(float f)
 {
-	int num;
+	int	num;
+
 	std::memcpy(&num, &f, sizeof(f));
-	printBit(num);
+	return (printBit(num));
 }
 
-int main( void )
+int main( int argc, char **argv )
 {
-	Triangle	abc(Point(0,0), Point(42,0), Point(0,42));
-	Point		p(41.999999,0);
+	Triangle abc;
+	Point    p;
 
-	std::cout << abc.getArea() << std::endl;
-	std::cout << abc.cointain(p) << std::endl;
-	// std::cout << "hey" << p << "bye" << std::endl;
-	// std::cout << "hey" << abc << "bye" << std::endl;
+	if (argc == 9)
+	{
+		abc = Triangle(Point(atof(argv[1]),atof(argv[2])), Point(atof(argv[3]),atof(argv[4])), Point(atof(argv[5]),atof(argv[6])));
+		p = Point(atof(argv[7]),atof(argv[8]));
+	}
+	else if (argc == 7)
+	{
+		abc = Triangle(Point(atof(argv[1]),atof(argv[2])), Point(atof(argv[3]),atof(argv[4])), Point(atof(argv[5]),atof(argv[6])));
+		p = Point(42,42);
+	}
+	else if (argc == 3)
+	{
+		abc = Triangle(Point(0,0), Point(42,0), Point(0,42));
+		p = Point(atof(argv[1]),atof(argv[2]));
+	}
+	else
+	{
+		abc = Triangle(Point(0,0), Point(42,0), Point(0,42));
+		p = Point(41.9, 77);
+	}
+	std::cout << "Does triangle " << abc << " contain point " << p << "?" << std::endl;
+	std::cout << "Triangle total area is:" << abc.getArea() << std::endl;
+	std::cout << (abc.cointain(p) ? "True" : "False") << std::endl;
+	return (0);
 }

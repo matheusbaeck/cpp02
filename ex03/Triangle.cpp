@@ -18,7 +18,7 @@ Triangle::Triangle( Point _A, Point _B, Point _C ) : _A(_A), _B(_B), _C(_C)
 {
 	if (_A == _B || _A == _C || _C == _B)
 	{
-		std::cout << "not a valid triangle" << std::endl;
+		std::cout << *this << " is't a valid triangle" << std::endl;
 		this->_exist = false;
 	}
 	else
@@ -26,12 +26,13 @@ Triangle::Triangle( Point _A, Point _B, Point _C ) : _A(_A), _B(_B), _C(_C)
 	// std::cout << "Triangle Piont constructor" << std::endl; 
 }
 
-Triangle::Triangle( Triangle const &src ) { *this = src; /*std::cout << "Triangle Copy constructor" << std::endl;*/ }
+Triangle::Triangle( Triangle const &src ) { *this = src; std::cout << "Triangle Copy constructor" << std::endl; }
 
 Triangle::~Triangle( void ) { /*std::cout << "Triangle destructor" << std::endl;*/ }
 
 Triangle	&Triangle::operator=(Triangle const &obj)
 {
+	std::cout << "Triangle assig operator" << std::endl;
 	this->_A = obj._A;
 	this->_B = obj._B;
 	this->_C = obj._C;
@@ -43,10 +44,12 @@ Point	Triangle::vA() const
 {
 	return (this->_A);
 }
+
 Point	Triangle::vB() const
 {
 	return (this->_B);
 }
+
 Point	Triangle::vC() const
 {
 	return (this->_C);
@@ -71,21 +74,29 @@ bool	Triangle::cointain( Point P ) const
 		return (false);
 	if (!(pab._exist && pbc._exist && pca._exist))
 	{
-		std::cout << "point coincid with a vertice!" << std::endl;
+		std::cout << "Point coincid with a vertice! " << P << std::endl;
 		return (true);
 	}
 	if (this->getArea() == (pab.getArea() + pbc.getArea() + pca.getArea()))
 	{
-		std::cout << pab.getArea() << " " << pbc.getArea() << " " << pca.getArea() << std::endl; 
 		if (pab.getArea() == 0 || pbc.getArea() == 0 || pca.getArea() == 0)
 		{
-			std::cout << "point coincid with a side!" << std::endl;
+			std::cout << P << " coincid with one side of triangle!" << std::endl;
+			std::cout << "Point is inside triangle!" << std::endl;
 			return (true);
 		}
-		std::cout << "point is inside triangle!" << std::endl;
+		std::cout << "Sum area of subTriangles is: " << pab.getArea() << " + " << pbc.getArea() << " + " << pca.getArea() << " = " << this->getArea() << std::endl;
+		std::cout << "Equal areas means Point "<< P << " is inside triangle!" << std::endl;
 		return (true);
 	}
+	std::cout << "Sum area of subTriangles is: " << pab.getArea() << " + " << pbc.getArea() << " + " << pca.getArea() << " = " << pab.getArea() + pbc.getArea() + pca.getArea() << std::endl;
+	std::cout << "Diferent areas means Point "<< P << " is outside of triangle!" << std::endl;
 	return (false);
+}
+
+bool	Triangle::isValid( void ) const
+{
+	return (this->_exist);
 }
 
 std::ostream	&operator<<(std::ostream &os, Triangle const &obj)

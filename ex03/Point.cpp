@@ -27,7 +27,7 @@ Point	&Point::operator=(Point const &obj)
 	if (this != &obj)
 	{
 		this->_x = obj._x;
-		this->_y = obj._x;
+		this->_y = obj._y;
 	}
 	return (*this);
 }
