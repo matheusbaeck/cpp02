@@ -6,7 +6,7 @@
 /*   By: math <math@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 19:30:30 by math              #+#    #+#             */
-/*   Updated: 2024/07/05 18:10:25 by math             ###   ########.fr       */
+/*   Updated: 2024/07/10 14:14:27 by math             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,9 @@
 
 const int Fixed::fractional_bits;
 
-Fixed::Fixed( void ) : _value(0)
-{
-	// std::cout << "Default constructor " << std::endl;
-}
+Fixed::Fixed( void ) : _value(0) {}
 
-Fixed::Fixed( int value ) : _value(value >= 0 ? (value << this->fractional_bits) & ~(1 << 31) : value << this->fractional_bits | (1 << 31))
-{
-	// std::cout << "Int constructor " << std::endl;
-}
+Fixed::Fixed( int value ) : _value(value >= 0 ? (value << this->fractional_bits) & ~(1 << 31) : value << this->fractional_bits | (1 << 31)) {}
 
 Fixed::Fixed(float value)
 {
@@ -34,19 +28,12 @@ Fixed::Fixed(float value)
 	this->_value = integer_part << Fixed::fractional_bits;
 	this->_value = (value >= 0) ? (this->_value & ~(1 << 31)) : (this->_value | (1 << 31));
 	this->_value |= fractional_part;
-	// std::cout << "Float constructor " << std::endl;
 }
 
-Fixed::Fixed( Fixed const &src)
-{
-	// std::cout << "Copy constructor " << std::endl;
-	*this = src;
-}
 
-Fixed::~Fixed( void )
-{
-	// std::cout << "Destructor " << std::endl;
-}
+Fixed::Fixed( Fixed const &src) { *this = src; }
+
+Fixed::~Fixed( void ) {}
 
 int	Fixed::getRawBits( void ) const
 {
@@ -55,16 +42,15 @@ int	Fixed::getRawBits( void ) const
 
 void	Fixed::setRawBits( int newValue )
 {
-	_value = newValue;
+	this->_value = newValue;
 }
 
 float	Fixed::toFloat( void ) const
 {
 	float	f_integer = static_cast<float>(this->toInt());
 	float	f_fractional = 0;
-	int		expo = 127 << 23;
-	int		mantissa = (this->_value & ((1 << 8) - 1)) << (23 - 8);
-	int		aux = (expo | mantissa);
+	int		mantissa = (this->_value & ((1 << this->fractional_bits) - 1)) << (23 - this->fractional_bits);
+	int		aux = ((127 << 23) | mantissa);
 
 	if (mantissa == 0)
 		return(f_integer);
@@ -81,11 +67,9 @@ float	Fixed::toFloat( void ) const
 
 int		Fixed::toInt( void ) const
 {
-	int	sign_mask = (1 << 31);
-	int	sign;
-
-	sign = this->_value & sign_mask;
-	return ((this->_value >> this->fractional_bits) | sign);
+	if (!(this->_value & (~(1 << 31) - ((1 << this->fractional_bits) - 1))) && (this->_value & ((1 << this->fractional_bits) - 1)))
+		return (-0);
+	return (((this->_value) >> this->fractional_bits));
 }
 
 std::ostream	&operator<<(std::ostream &os, Fixed const &obj)
@@ -99,7 +83,6 @@ std::ostream	&operator<<(std::ostream &os, Fixed const &obj)
 
 Fixed &Fixed::operator=(Fixed const &obj)
 {
-	// std::cout << "Copy assignment operator " << std::endl;
 	this->_value = obj.getRawBits();
 	return (*this);
 }
@@ -163,40 +146,50 @@ bool	Fixed::operator==(Fixed const &obj) const
 
 bool	Fixed::operator>(Fixed const &obj) const
 {
-	int	frac_mask = (1<< this->fractional_bits) - 1;
-	int	sign_mask = 1 << 31;
-	int	int_mask = (sign_mask - 1) - frac_mask;
-
-	if ((this->_value & sign_mask & int_mask) > (obj._value & sign_mask & int_mask))
-		return (true);
-	else if ((this->_value & sign_mask & int_mask) < (obj._value & sign_mask & int_mask))
-		return (false);
-	else
-		return (this->_value & sign_mask & frac_mask) > (obj._value & sign_mask & frac_mask);
+	if ((this->_value & (1 << 31)) != (obj._value & (1 << 31)))
+		return (!(this->_value & (1 << 31)));
+	for (int i = 30; i >= 0; i--)
+	{
+		if ((this->_value & (1 << i)) != (obj._value & (1 << i)))
+			return (this->_value & (1 << i));
+	}
+	return (false);
 }
 
 bool	Fixed::operator<(Fixed const &obj) const
 {
-	int	frac_mask = (1<< this->fractional_bits) - 1;
-	int	sign_mask = 1 << 31;
-	int	int_mask = (frac_mask - 1) - frac_mask;
-
-	if ((this->_value & sign_mask & int_mask) < (obj._value & sign_mask & int_mask))
-		return (true);
-	else if ((this->_value & sign_mask & int_mask) > (obj._value & sign_mask & int_mask))
-		return (false);
-	else
-		return (this->_value & sign_mask & frac_mask) < (obj._value & sign_mask & frac_mask);
+	if ((this->_value & (1 << 31)) != (obj._value & (1 << 31)))
+		return (this->_value & (1 << 31));
+	for (int i = 30; i >= 0; i--)
+	{
+		if ((this->_value & (1 << i)) != (obj._value & (1 << i)))
+			return (!(this->_value & (1 << i)));
+	}
+	return (false);
 }
 
 bool	Fixed::operator>=(Fixed const &obj) const
 {
-	return (*this == obj || *this > obj);
+	if ((this->_value & (1 << 31)) != (obj._value & (1 << 31)))
+		return (!(this->_value & (1 << 31)));
+	for (int i = 30; i >= 0; i--)
+	{
+		if ((this->_value & (1 << i)) != (obj._value & (1 << i)))
+			return (this->_value & (1 << i));
+	}
+	return (true);
 }
 
 bool	Fixed::operator<=(Fixed const &obj) const
 {
-	return (*this == obj || *this < obj);
+	if ((this->_value & (1 << 31)) != (obj._value & (1 << 31)))
+		return (this->_value & (1 << 31));
+	for (int i = 30; i >= 0; i--)
+	{
+		if ((this->_value & (1 << i)) != (obj._value & (1 << i)))
+			return (!(this->_value & (1 << i)));
+	}
+	return (true);
 }
 
 bool	Fixed::operator!=(Fixed const &obj) const

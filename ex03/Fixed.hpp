@@ -6,7 +6,7 @@
 /*   By: math <math@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 19:30:59 by math              #+#    #+#             */
-/*   Updated: 2024/07/03 18:39:57 by math             ###   ########.fr       */
+/*   Updated: 2024/07/06 13:29:49 by math             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ class Fixed
 
 std::ostream	&operator<<(std::ostream &os, Fixed const &obj);
 
-void	printBit(int nb);
-void	printBit(float f);
+std::string	printBit(int nb);
+std::string	printBit(float f);
 
 #endif
